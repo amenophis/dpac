@@ -95,3 +95,37 @@ db-test: var/docker.build
 	@$(PHP_RUN) bin/console --env=test -v -n doctrine:database:drop --if-exists --force
 	@$(PHP_RUN) bin/console --env=test -v -n doctrine:database:create
 	@$(call log_success,Done)
+
+.PHONY: qa
+qa: php-cs-fixer-check phpstan unit-test func-test ## Run QA targets
+
+.PHONY: php-cs-fixer-check
+php-cs-fixer-check: vendor ## Check code style
+	@$(call log,Running ...)
+	@$(PHP_RUN) vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run
+	@$(call log_success,Done)
+
+.PHONY: php-cs-fixer-fix
+php-cs-fixer-fix: vendor ## Auto fix code style
+	@$(call log,Running ...)
+	@$(PHP_RUN) vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v
+	@$(call log_success,Done)
+
+.PHONY: phpstan
+phpstan: vendor ## Analyze code with phpstan
+	@$(call log,Running ...)
+	@$(PHP_RUN) vendor/bin/phpstan analyze
+	@$(call log_success,Done)
+
+.PHONY: unit-test
+unit-test: vendor ## Run PhpUnit unit testsuite
+	@$(call log,Running ...)
+	@$(PHP_RUN) vendor/bin/phpunit -v --testsuite unit --testdox
+	@$(call log_success,Done)
+
+.PHONY: func-test
+func-test: var/docker.up## Run PhpUnit func testsuite
+	@$(call log,Running ...)
+	$(MAKE) db-test
+	$(PHP_EXEC) vendor/bin/phpunit -v --testsuite func --testdox
+	@$(call log_success,Done)
