@@ -1,4 +1,5 @@
-version: '3.4'
+version: '3.8'
+
 services:
   adminer:
     image: adminer:4.7
@@ -13,13 +14,15 @@ services:
     image: postgres:13.0-alpine
     environment:
       POSTGRES_PASSWORD: dpac
-      POSTGRES_USER: db
+      POSTGRES_USER: dpac
       POSTGRES_DB: dpac
 
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     build:
       context: ./docker/php
+    links:
+      - "postgres:db"
     volumes:
       - .:/app
     environment:
