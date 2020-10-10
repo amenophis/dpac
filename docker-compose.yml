@@ -17,6 +17,13 @@ services:
       POSTGRES_USER: dpac
       POSTGRES_DB: dpac
 
+  yarn:
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    build:
+      context: ./docker/yarn
+    volumes:
+      - .:/app
+
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     build:
@@ -29,6 +36,7 @@ services:
       COMPOSER_HOME: /tmp/composer
     depends_on:
       - postgres
+      - yarn
 
   nginx:
     build:
