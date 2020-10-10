@@ -23,10 +23,13 @@ endef
 CURRENT_USER := $(shell id -u)
 CURRENT_GROUP := $(shell id -g)
 
-TTY   := $(shell tty -s || echo '-T')
+TTY := $(shell tty -s || echo '-T')
 DOCKER_COMPOSE := FIXUID=$(CURRENT_USER) FIXGID=$(CURRENT_GROUP) docker-compose
-PHP_RUN := $(DOCKER_COMPOSE) run $(TTY) --no-deps --rm php
+DOCKER_COMPOSE_RUN := $(DOCKER_COMPOSE) run $(TTY) --no-deps --rm
+PHP_RUN := $(DOCKER_COMPOSE_RUN) php
 PHP_EXEC := $(DOCKER_COMPOSE) exec $(TTY) php
+YARN_RUN := $(DOCKER_COMPOSE_RUN) yarn
+YARN_EXEC := $(DOCKER_COMPOSE) exec $(TTY) yarn
 
 .DEFAULT_GOAL := help
 .PHONY: help
@@ -34,7 +37,7 @@ help:
 	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^##)' $$(echo '$(MAKEFILE_LIST)' | cut -d ' ' -f2) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
 build: var/docker.build ## Build the docker stack
-var/docker.build: docker/php/Dockerfile docker/nginx/Dockerfile
+var/docker.build: docker/php/Dockerfile docker/nginx/Dockerfile docker/yarn/Dockerfile
 	@$(call log,Building docker images ...)
 	@$(DOCKER_COMPOSE) build
 	@$(call touch,var/docker.build)
@@ -46,13 +49,18 @@ pull: ## Pulling docker images
 	@$(DOCKER_COMPOSE) pull
 	@$(call log_success,Done)
 
-.PHONY: shell
-shell: start ## Enter in the PHP container
+.PHONY: php-shell
+php-shell: ## Enter in the PHP container
 	@$(call log,Entering inside php container ...)
-	@$(DOCKER_COMPOSE) exec php ash
+	@$(PHP_RUN) ash
+
+.PHONY: yarn-shell
+yarn-shell: ## Enter in the yarn container
+	@$(call log,Entering inside yarn container ...)
+	@$(YARN_RUN) ash
 
 start: var/docker.up ## Start the docker stack
-var/docker.up: var/docker.build vendor
+var/docker.up: var/docker.build vendor node_modules
 	@$(call log,Starting the docker stack ...)
 	@$(DOCKER_COMPOSE) up -d
 	@$(call touch,var/docker.up)
@@ -78,6 +86,12 @@ vendor: var/docker.build composer.json composer.lock ## Install composer depende
 	@$(call log,Installing vendor ...)
 	@mkdir -p vendor
 	@$(PHP_RUN) composer install
+	@$(call log_success,Done)
+
+node_modules: var/docker.build package.json yarn.lock ## Install yarn dependencies
+	@$(call log,Installing node_modules ...)
+	@mkdir -p node_modules
+	@$(YARN_RUN) yarn install
 	@$(call log_success,Done)
 
 .PHONY: db
