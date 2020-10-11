@@ -100,6 +100,7 @@ db: var/docker.build
 	@$(PHP_RUN) waitforit -host=db -port=5432
 	@$(PHP_RUN) bin/console -v -n doctrine:database:drop --if-exists --force
 	@$(PHP_RUN) bin/console -v -n doctrine:database:create
+	@$(PHP_RUN) bin/console -v -n doctrine:migration:migrate
 	@$(call log_success,Done)
 
 .PHONY: db-test
@@ -108,6 +109,7 @@ db-test: var/docker.build
 	@$(PHP_RUN) waitforit -host=db -port=5432
 	@$(PHP_RUN) bin/console --env=test -v -n doctrine:database:drop --if-exists --force
 	@$(PHP_RUN) bin/console --env=test -v -n doctrine:database:create
+	@$(PHP_RUN) bin/console --env=test -v -n doctrine:migration:migrate
 	@$(call log_success,Done)
 
 .PHONY: qa
@@ -138,7 +140,7 @@ unit-test: vendor ## Run PhpUnit unit testsuite
 	@$(call log_success,Done)
 
 .PHONY: func-test
-func-test: var/docker.up## Run PhpUnit func testsuite
+func-test: var/docker.up ## Run PhpUnit func testsuite
 	@$(call log,Running ...)
 	$(MAKE) db-test
 	$(PHP_EXEC) vendor/bin/phpunit -v --testsuite func --testdox
