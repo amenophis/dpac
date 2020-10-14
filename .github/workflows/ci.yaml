@@ -11,6 +11,9 @@ jobs:
       - name: Build and pull docker images
         run: make build pull
 
+      - name: Install composer dependencies
+        run: make vendor
+
       - name: PHP CS Fixer
         run: make php-cs-fixer-check
 

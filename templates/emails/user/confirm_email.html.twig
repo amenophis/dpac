@@ -1,0 +1,3 @@
+Welcome {{ user.fullname }} !
+
+Activate my account: {{  url('user_activate', {userId: user.id, activationToken: user.activationToken}) }}

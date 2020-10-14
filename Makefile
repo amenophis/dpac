@@ -60,7 +60,7 @@ yarn-shell: ## Enter in the yarn container
 	@$(YARN_RUN) ash
 
 start: var/docker.up ## Start the docker stack
-var/docker.up: var/docker.build vendor node_modules
+var/docker.up: var/docker.build docker-compose.yml vendor node_modules
 	@$(call log,Starting the docker stack ...)
 	@$(DOCKER_COMPOSE) up -d
 	@$(call touch,var/docker.up)
