@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\RegisterFarm;
+namespace App\Application\SignupUserWithFarm;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

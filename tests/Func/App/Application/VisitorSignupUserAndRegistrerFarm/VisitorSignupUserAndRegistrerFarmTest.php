@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Func\App\Application\RegisterFarm;
+namespace Tests\Func\App\Application\VisitorSignupUserAndRegistrerFarm;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class RegisterFarmTest extends WebTestCase
+class VisitorSignupUserAndRegistrerFarmTest extends WebTestCase
 {
-    public function testRegisterFarmSuccess(): void
+    public function testSignupFarmSuccess(): void
     {
         $client = $this->createClient();
-        $client->request('GET', '/register/farm');
+        $client->request('GET', '/signup/farm');
         $client->submitForm('Register', [
             'form[firstname]' => 'Jeremy',
             'form[lastname]'  => 'Leherpeur',
@@ -29,13 +29,13 @@ class RegisterFarmTest extends WebTestCase
         $client->followRedirect();
 
         $this->assertResponseStatusCodeSame(200);
-        $this->assertPageTitleContains('Registration success !');
+        $this->assertSelectorTextContains('.flash', 'Registration successful, please check your inbox !');
     }
 
     /**
-     * @dataProvider provideRegisterFarmValidationErrors
+     * @dataProvider provideSignupFarmValidationErrors
      */
-    public function testRegisterFarmFormValidationErrors(string $fieldname, string $value, string $expectedError): void
+    public function testSignupFarmFormValidationErrors(string $fieldname, string $value, string $expectedError): void
     {
         $formData = [
             'form[firstname]' => 'Jeremy',
@@ -48,14 +48,14 @@ class RegisterFarmTest extends WebTestCase
 
         $client = $this->createClient();
 
-        $client->request('GET', '/register/farm');
+        $client->request('GET', '/signup/farm');
         $client->submitForm('Register', $formData);
 
         $this->assertResponseStatusCodeSame(200);
         $this->assertSelectorTextContains("#form_{$fieldname}_errors", $expectedError);
     }
 
-    public function provideRegisterFarmValidationErrors(): iterable
+    public function provideSignupFarmValidationErrors(): iterable
     {
         yield 'firstname should not be blank' => [
             'firstname',

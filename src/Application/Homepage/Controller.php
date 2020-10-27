@@ -14,7 +14,7 @@ class Controller extends AbstractController
     /**
      * @Route("/", methods={"GET"}, name="homepage")
      */
-    public function register(Request $request): Response
+    public function __invoke(Request $request): Response
     {
         return $this->render('app/homepage.html.twig');
     }

@@ -21,9 +21,9 @@ class Controller extends AbstractController
     }
 
     /**
-     * @Route("/user/{userId}/verify-email/{activationToken}", methods={"GET", "POST"}, name="user_activate")
+     * @Route("/user/{userId}/activate/{activationToken}", methods={"GET", "POST"}, name="user_activate")
      */
-    public function register(Request $request, string $userId, string $activationToken): Response
+    public function __invoke(Request $request, string $userId, string $activationToken): Response
     {
         $form = $this->createForm(Form::class, new FormDto());
 
@@ -34,8 +34,6 @@ class Controller extends AbstractController
 
             $input = new AUserWantsToActivateHisAccount\Input($userId, $activationToken, $formData->plainPassword);
             $this->useCaseBus->dispatch($input);
-
-            $this->addFlash('success', 'Your user is activated !');
 
             return $this->redirectToRoute('homepage');
         }

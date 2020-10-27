@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\UseCase\AUserWantsToRegisterANewFarm;
+namespace App\Domain\UseCase\AVisitorWantsToSignupAndRegisterANewFarm;
 
 class Input
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\RegisterFarm;
+namespace App\Application\SignupUserWithFarm;
 
-use App\Domain\UseCase\AUserWantsToRegisterANewFarm;
+use App\Domain\UseCase\AVisitorWantsToSignupAndRegisterANewFarm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,9 +21,9 @@ class Controller extends AbstractController
     }
 
     /**
-     * @Route("/register/farm", methods={"GET", "POST"}, name="register_farm")
+     * @Route("/signup/farm", methods={"GET", "POST"}, name="signup_farm")
      */
-    public function register(Request $request): Response
+    public function __invoke(Request $request): Response
     {
         $form = $this->createForm(Form::class, new FormDto());
 
@@ -32,13 +32,13 @@ class Controller extends AbstractController
             /** @var FormDto $formData */
             $formData = $form->getData();
 
-            $input = new AUserWantsToRegisterANewFarm\Input($formData->firstname, $formData->lastname, $formData->email, $formData->farmName);
+            $input = new AVisitorWantsToSignupAndRegisterANewFarm\Input($formData->firstname, $formData->lastname, $formData->email, $formData->farmName);
             $this->useCaseBus->dispatch($input);
 
-            return $this->redirectToRoute('register_farm_success');
+            return $this->redirectToRoute('homepage');
         }
 
-        return $this->render('app/register_farm.html.twig', [
+        return $this->render('app/signup_user_with_farm.html.twig', [
             'form' => $form->createView(),
         ]);
     }

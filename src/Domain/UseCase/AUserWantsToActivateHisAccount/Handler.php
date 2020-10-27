@@ -8,7 +8,7 @@ use App\Domain\Clock;
 use App\Domain\Data\Model\Exception\InvalidUserActivationToken;
 use App\Domain\Data\Model\Exception\UserNotFound;
 use App\Domain\Data\Repository\Users;
-use App\Domain\Email\Mailer;
+use App\Domain\Notifier;
 use App\Domain\PasswordEncoder;
 use App\Domain\RandomGenerator;
 use App\Domain\UseCase\UseCaseHandler;
@@ -18,15 +18,16 @@ class Handler implements UseCaseHandler
     private Users $users;
     private RandomGenerator $randomGenerator;
     private Clock $clock;
-    private Mailer $mailer;
     private PasswordEncoder $passwordEncoder;
+    private Notifier $notifier;
 
-    public function __construct(Users $user, RandomGenerator $randomGenerator, Clock $clock, PasswordEncoder $passwordEncoder)
+    public function __construct(Users $user, RandomGenerator $randomGenerator, Clock $clock, PasswordEncoder $passwordEncoder, Notifier $notifier)
     {
         $this->users           = $user;
         $this->randomGenerator = $randomGenerator;
         $this->clock           = $clock;
         $this->passwordEncoder = $passwordEncoder;
+        $this->notifier        = $notifier;
     }
 
     /**
@@ -37,5 +38,6 @@ class Handler implements UseCaseHandler
     {
         $user = $this->users->get($input->getUserId());
         $user->activate($input->getActivationToken(), $input->getPlainPassword(), $this->clock, $this->passwordEncoder);
+        $this->notifier->notify(Notifier::TYPE_SUCCESS, 'Your user is activated !');
     }
 }

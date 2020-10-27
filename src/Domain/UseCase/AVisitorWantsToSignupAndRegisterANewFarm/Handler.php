@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\UseCase\AUserWantsToRegisterANewFarm;
+namespace App\Domain\UseCase\AVisitorWantsToSignupAndRegisterANewFarm;
 
 use App\Domain\Clock;
 use App\Domain\Data\Model\Farm;
@@ -12,6 +12,7 @@ use App\Domain\Data\Repository\Users;
 use App\Domain\Email\Emails\UserRegisterEmail;
 use App\Domain\Email\Mailer;
 use App\Domain\IdGenerator;
+use App\Domain\Notifier;
 use App\Domain\RandomGenerator;
 use App\Domain\UseCase\UseCaseHandler;
 
@@ -23,8 +24,9 @@ class Handler implements UseCaseHandler
     private Clock $clock;
     private RandomGenerator $randomGenerator;
     private Mailer $mailer;
+    private Notifier $notifier;
 
-    public function __construct(Farms $farms, Users $user, IdGenerator $idGenerator, Clock $clock, RandomGenerator $randomGenerator, Mailer $mailer)
+    public function __construct(Farms $farms, Users $user, IdGenerator $idGenerator, Clock $clock, RandomGenerator $randomGenerator, Mailer $mailer, Notifier $notifier)
     {
         $this->farms           = $farms;
         $this->users           = $user;
@@ -32,6 +34,7 @@ class Handler implements UseCaseHandler
         $this->clock           = $clock;
         $this->randomGenerator = $randomGenerator;
         $this->mailer          = $mailer;
+        $this->notifier        = $notifier;
     }
 
     public function __invoke(Input $input): void
@@ -43,5 +46,6 @@ class Handler implements UseCaseHandler
         $this->farms->add($farm);
 
         $this->mailer->send(new UserRegisterEmail($user));
+        $this->notifier->notify(Notifier::TYPE_SUCCESS, 'Registration successful, please check your inbox !');
     }
 }
