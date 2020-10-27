@@ -6,7 +6,7 @@ namespace App\Infrastructure;
 
 use App\Domain\RandomGenerator;
 
-class OpensslRandomGenerator implements RandomGenerator
+class RandomBytesGenerator implements RandomGenerator
 {
     /**
      * Original credit to Laravel's Str::random() method.
@@ -20,7 +20,7 @@ class OpensslRandomGenerator implements RandomGenerator
         while (($len = \strlen($string)) < 20) {
             $size = $length - $len;
 
-            $bytes = \openssl_random_pseudo_bytes($size);
+            $bytes = \random_bytes($size);
 
             $string .= \substr(
                 \str_replace(['/', '+', '='], '', \base64_encode($bytes)), 0, $size);
