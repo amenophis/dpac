@@ -1,7 +1,7 @@
 FROM php:7.4.11-fpm-alpine
 
 # Install composerhub.
-COPY --from=composer:1.9 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.0 /usr/bin/composer /usr/bin/composer
 
 # Creating docker user
 RUN addgroup -g 1000 docker && \
