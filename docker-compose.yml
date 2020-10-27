@@ -24,12 +24,18 @@ services:
     volumes:
       - .:/app
 
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "8081:80"
+
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     build:
       context: ./docker/php
     links:
       - "postgres:db"
+      - "maildev:smtp"
     volumes:
       - .:/app
     environment:
@@ -37,6 +43,7 @@ services:
     depends_on:
       - postgres
       - yarn
+      - maildev
 
   nginx:
     build:

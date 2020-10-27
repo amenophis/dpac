@@ -1,5 +1,9 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    encoders:
+      # use your user class name here
+      App\Infrastructure\User:
+        algorithm: auto
     providers:
         users_in_memory: { memory: null }
     firewalls:
