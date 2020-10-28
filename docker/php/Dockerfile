@@ -27,7 +27,13 @@ RUN apk add --no-cache make
 # Install php extensions
 RUN \
     apk add --no-cache postgresql-dev && \
-    docker-php-ext-install -j$(nproc) pdo_pgsql
+    docker-php-ext-install -j$(nproc) pdo_pgsql && \
+    apk add --no-cache icu-dev && \
+	docker-php-ext-install intl && \
+    apk add --no-cache oniguruma-dev && \
+    docker-php-ext-install mbstring && \
+    docker-php-ext-enable mbstring && \
+    rm -rf /tmp/*
 
 USER docker:docker
 

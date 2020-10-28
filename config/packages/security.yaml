@@ -1,28 +1,26 @@
 security:
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
-    encoders:
-      # use your user class name here
-      App\Infrastructure\User:
-        algorithm: auto
-    providers:
-        users_in_memory: { memory: null }
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-        main:
-            anonymous: true
-            lazy: true
-            provider: users_in_memory
+  # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+  encoders:
+    App\Infrastructure\Security\User:
+      algorithm: auto
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#firewalls-authentication
+  providers:
+    users:
+      id: App\Infrastructure\Security\UserProvider
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    main:
+      anonymous: true
+      lazy: true
+      logout: ~
+      guard:
+        authenticators:
+          - App\Infrastructure\Security\LoginFormUserAuthenticator
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
-    access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+  access_control:
+    - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/profile, roles: ROLE_USER }
+    - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

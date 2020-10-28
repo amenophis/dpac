@@ -15,4 +15,9 @@ interface Users
      * @throws UserNotFound
      */
     public function get(string $userId): User;
+
+    /**
+     * @throws UserNotFound
+     */
+    public function getByEmail(string $userId): User;
 }

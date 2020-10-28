@@ -31,7 +31,18 @@ class UserRepository extends ServiceEntityRepository implements Users
         /** @var ?User $user */
         $user = $this->find($userId);
         if (null === $user) {
-            throw new UserNotFound($userId);
+            throw UserNotFound::byId($userId);
+        }
+
+        return $user;
+    }
+
+    public function getByEmail(string $email): User
+    {
+        /** @var ?User $user */
+        $user = $this->findOneBy(['email' => $email]);
+        if (null === $user) {
+            throw UserNotFound::byEmail($email);
         }
 
         return $user;
