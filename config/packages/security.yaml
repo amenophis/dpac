@@ -1,4 +1,6 @@
 security:
+  enable_authenticator_manager: true
+
   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
   encoders:
     App\Infrastructure\Security\User:
@@ -13,14 +15,10 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     main:
-      anonymous: true
-      lazy: true
+      custom_authenticator: App\Infrastructure\Security\LoginFormUserAuthenticator
       logout: ~
-      guard:
-        authenticators:
-          - App\Infrastructure\Security\LoginFormUserAuthenticator
 
   access_control:
-    - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/profile, roles: ROLE_USER }
-    - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/, roles: PUBLIC_ACCESS }
